@@ -2,9 +2,13 @@ import Phaser from 'phaser';
 import Config from "../Config";
 import Player, { Direction } from '../characters/Player';
 import Structure from '../objects/Tower';
+import * as phaser from "phaser";
+import axios from "axios";
 
 
 export default class PlayingScene extends Phaser.Scene {
+
+    triggerTimer = phaser.Time.TimerEvent;
     constructor() {
         super("playGame");
     }
@@ -47,11 +51,33 @@ export default class PlayingScene extends Phaser.Scene {
         this.m_tower = new Structure(this);
 
         this.physics.add.collider(this.m_player, this.m_tower);
+        this.resources = 0;
+        this.timer = 0;
+
     }
 
-    update() {
-        this.handlePlayerMove();
+    timerEvent(resources) {
+        axios.defaults.withCredentials = true;
+        if(resources%50 ==0) {
+            /***
+            axios.get('http://localhost:7777/api/hello' ,
+                {'Access-Control-Allow-Credentials': '*'},{
+                withCredentials: true,
+            }).then(res => {
+                console.log(res.data);
+            }).catch(error => {
+                console.log('erro', error);
+            })
+             ***/
+            console.log(this.m_player.getBottomCenter());
+        }
+    }
 
+
+    update() {
+        this.resources += 1;
+        this.handlePlayerMove();
+        this.timerEvent(this.resources)
     }
 
     //////////////////////// FUNCTIONS ////////////////////////

@@ -21,9 +21,12 @@ export default class Player extends Phaser.Physics.Arcade.Image {
 
     npByEnemy(damage) {
     }
+    sleep(milliseconds) {
+        const start = Date.now();
+        while ((Date.now() - start) < milliseconds);
+    }
 
     move(direction) {
-        console.log(this.getBottomCenter())
         switch (direction) {
             case Direction.Up:
                 this.y -= Player.PLAYER_SPEED;
