@@ -9,7 +9,7 @@ export default class Player extends Phaser.Physics.Arcade.Image {
 
     constructor(scene) {
         super(scene, 800, 800, "cat");
-        this.scale = 1;
+        this.scale = 0.1;
         this.alpha = 1;
 
         scene.add.existing(this);
@@ -18,6 +18,8 @@ export default class Player extends Phaser.Physics.Arcade.Image {
         scene.physics.addn
 
     }
+
+
 
     npByEnemy(damage) {
     }
