@@ -4,6 +4,8 @@
 
 Generated with [Phaser 3 project template](https://github.com/photonstorm/phaser3-project-template), Inspired by Vampire Survivors
 
+we are students using this code to practice our project
+
 ## Available Commands
 
 | Command | Description |
