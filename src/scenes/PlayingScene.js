@@ -6,11 +6,18 @@ import * as phaser from "phaser";
 import axios, {create} from "axios";
 
 
+
 export default class PlayingScene extends Phaser.Scene {
+
+
 
     triggerTimer = phaser.Time.TimerEvent;
     constructor() {
         super("playGame");
+    }
+
+    exit(){
+
     }
 
     create() {
@@ -58,6 +65,10 @@ export default class PlayingScene extends Phaser.Scene {
         this.resources = 0;
         this.timer = 0;
 
+        window.onbeforeunload = function(e) {
+            socket.emit('leaveGame', playerName);
+        };
+
     }
     state = {
         arr:[]
@@ -65,7 +76,7 @@ export default class PlayingScene extends Phaser.Scene {
     timerEvent(resources) {
         axios.defaults.withCredentials = true;
         if(resources>200) {
-            axios.get('http://localhost:7777/users' ,
+            axios.get('http://10.188.191.212:7777/users' ,
                 {'Access-Control-Allow-Credentials': '*'},{
                 withCredentials: true,
             }).then(res => {
@@ -78,7 +89,7 @@ export default class PlayingScene extends Phaser.Scene {
     }
 
     postPosision(){
-        axios.post('http://localhost:7777/users/save' ,{
+        axios.post('http://10.188.191.212:7777/users/save' ,{
             "nickname" : this.m_player.name,
             "point" : {
                 "x" : this.m_player.getBottomCenter().x,
@@ -87,7 +98,7 @@ export default class PlayingScene extends Phaser.Scene {
         },{
             withCredentials: true,
         }).then(res => {
-            console.log('succes');
+            //console.log('succes');
         }).catch(error => {
             console.log('erro', error);
         })
@@ -98,7 +109,7 @@ export default class PlayingScene extends Phaser.Scene {
             setTimeout(() => resolve("완료!"), 1000)
         });
 
-        axios.get('http://localhost:7777/create_userName' ,
+        axios.get('http://10.188.191.212:7777/create_userName' ,
             {'Access-Control-Allow-Credentials': '*'},{
                 withCredentials: true,
             }).then(res => {
@@ -111,7 +122,7 @@ export default class PlayingScene extends Phaser.Scene {
 
         let result = await promise; // 프라미스가 이행될 때까지 기다림 (*)
 
-        axios.post('http://localhost:7777/users/save' ,{
+        axios.post('http://10.188.191.212:7777/users/save' ,{
             "nickname" : this.m_player.name,
                 "point" : {
                 "x" : 800,
@@ -120,7 +131,7 @@ export default class PlayingScene extends Phaser.Scene {
         },{
                 withCredentials: true,
             }).then(res => {
-            console.log('succes');
+            //console.log('succes');
         }).catch(error => {
             console.log('erro', error);
         })
@@ -168,8 +179,8 @@ export default class PlayingScene extends Phaser.Scene {
 
 
 
-
     update() {
+
         this.resources += 1;
         this.handlePlayerMove();
         this.timerEvent(this.resources)
