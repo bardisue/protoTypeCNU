@@ -38,16 +38,7 @@ export default class PlayingScene extends Phaser.Scene {
         // player
         //this.m_player = new Player(this);
         this.m_player = new Player(this);
-
-        axios.get('http://localhost:7777/createChar' ,
-            {'Access-Control-Allow-Credentials': '*'},{
-                withCredentials: true,
-            }).then(res => {
-            // res.data.forEach(str => console.log(str));
-            treatData(res.data)
-        }).catch(error => {
-            console.log('erro', error);
-        })
+        this.resetCharacter();
 
         this.cameras.main.setBounds(0, 0, 3000, 2121);
         //this.m_player.add(new Player(this));
@@ -73,25 +64,71 @@ export default class PlayingScene extends Phaser.Scene {
     }
     timerEvent(resources) {
         axios.defaults.withCredentials = true;
-        if(resources%50 ==0) {
+        if(resources>200) {
             axios.get('http://localhost:7777/users' ,
                 {'Access-Control-Allow-Credentials': '*'},{
                 withCredentials: true,
             }).then(res => {
                 this.treatData(res.data)
+                this.postPosision();
             }).catch(error => {
                 console.log('erro', error);
             })
-            console.log(this.m_player.getBottomCenter());
         }
     }
 
-    resetCharacter(res){
+    postPosision(){
+        axios.post('http://localhost:7777/users/save' ,{
+            "nickname" : this.m_player.name,
+            "point" : {
+                "x" : this.m_player.getBottomCenter().x,
+                "y" : this.m_player.getBottomCenter().y
+            }
+        },{
+            withCredentials: true,
+        }).then(res => {
+            console.log('succes');
+        }).catch(error => {
+            console.log('erro', error);
+        })
+    }
+
+    async resetCharacter(){
+        let promise = new Promise((resolve, reject) => {
+            setTimeout(() => resolve("완료!"), 1000)
+        });
+
+        axios.get('http://localhost:7777/create_userName' ,
+            {'Access-Control-Allow-Credentials': '*'},{
+                withCredentials: true,
+            }).then(res => {
+                const tmp = JSON.stringify(res.data);
+                this.m_player.setName(JSON.parse(tmp).nickname);
+        }).catch(error => {
+            console.log('WTF', error);
+        });
+        this.m_player.setPosition(800,800)
+
+        let result = await promise; // 프라미스가 이행될 때까지 기다림 (*)
+
+        axios.post('http://localhost:7777/users/save' ,{
+            "nickname" : this.m_player.name,
+                "point" : {
+                "x" : 800,
+                    "y" : 800
+            }
+        },{
+                withCredentials: true,
+            }).then(res => {
+            console.log('succes');
+        }).catch(error => {
+            console.log('erro', error);
+        })
 
     }
 
 
-    treatData(res){
+    async treatData(res){
         const tmp = JSON.stringify(res)
         const myObj = JSON.parse(tmp);
         var len = myObj.length
@@ -99,7 +136,7 @@ export default class PlayingScene extends Phaser.Scene {
             var tmpName = myObj[i].nickname
             var tmpX = myObj[i].point.x
             var tmpY = myObj[i].point.y
-            if(tmpName == this.m_player.name) {
+            if(tmpName === this.m_player.name) {
                 continue;
             }
             var found = this.playList.find(element => element.name == tmpName);
